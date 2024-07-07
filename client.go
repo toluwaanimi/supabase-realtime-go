@@ -82,13 +82,13 @@ func NewClient(endPoint string, options ...func(*Client)) *Client {
 		option(c)
 	}
 
-	c.reconnectTimer = NewTimer(c.reconnectAfterMs, c.connect)
+	c.reconnectTimer = NewTimer(c.reconnectAfterMs, c.Connect)
 	c.serializer = NewSerializer()
 
 	return c
 }
 
-func (c *Client) connect() {
+func (c *Client) Connect() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -105,7 +105,7 @@ func (c *Client) connect() {
 	}
 }
 
-func (c *Client) disconnect(code int, reason string) {
+func (c *Client) Disconnect(code int, reason string) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -274,4 +274,16 @@ func (c *Client) Channel(topic string, params RealtimeChannelOptions) *Channel {
 	channel := NewChannel(topic, params, c)
 	c.channels = append(c.channels, channel)
 	return channel
+}
+
+func WithLogger(logger func(kind, msg string, data interface{})) func(*Client) {
+	return func(c *Client) {
+		c.logger = logger
+	}
+}
+
+func WithTimeout(timeout int) func(*Client) {
+	return func(c *Client) {
+		c.timeout = timeout
+	}
 }

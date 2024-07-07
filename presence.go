@@ -1,5 +1,9 @@
 package supabase_realtime_go
 
+import (
+	"errors"
+)
+
 type RealtimePresence struct {
 	state        map[string][]Presence
 	pendingDiffs []RawPresenceDiff
@@ -99,6 +103,16 @@ func NewRealtimePresence(channel *Channel) *RealtimePresence {
 	})
 
 	return rp
+}
+
+func (rp *RealtimePresence) Track(payload map[string]interface{}, opts map[string]interface{}) error {
+	if rp.channel.state != CHANNEL_STATE_JOINED {
+		return errors.New("channel is not joined")
+	}
+
+	// Your tracking logic here. For simplicity, we will assume a basic track operation
+	rp.channel.push("presence_diff", payload, rp.channel.timeout).Send()
+	return nil
 }
 
 func syncState(
