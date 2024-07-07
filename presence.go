@@ -49,7 +49,7 @@ func NewRealtimePresence(channel *Channel) *RealtimePresence {
 		"diff":  "presence_diff",
 	}
 
-	channel.On(events["state"], func(payload interface{}) {
+	channel.On(events["state"], nil, func(payload interface{}) {
 		rp.joinRef = channel.joinRef()
 		newState := payload.(RawPresenceState)
 		rp.state = syncState(rp.state, newState, rp.caller.OnJoin, rp.caller.OnLeave)
@@ -65,7 +65,7 @@ func NewRealtimePresence(channel *Channel) *RealtimePresence {
 		rp.caller.OnSync()
 	})
 
-	channel.On(events["diff"], func(payload interface{}) {
+	channel.On(events["diff"], nil, func(payload interface{}) {
 		diff := payload.(RawPresenceDiff)
 		if rp.inPendingSyncState() {
 			rp.pendingDiffs = append(rp.pendingDiffs, diff)
