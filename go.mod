@@ -1,4 +1,4 @@
-module supabase-realtime-go
+module github.com/toluwaanimi/supabase_realtime_go
 
 go 1.21
 
