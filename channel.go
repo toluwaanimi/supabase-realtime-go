@@ -58,9 +58,9 @@ func NewChannel(topic string, params RealtimeChannelOptions, socket *Client) *Ch
 		channel.pushBuffer = []*Push{}
 	})
 
-	channel.On(CHANNEL_EVENT_CLOSE, channel.onClose)
-	channel.On(CHANNEL_EVENT_ERROR, channel.onError)
-	channel.On(CHANNEL_EVENT_REPLY, channel.onReply)
+	channel.On(CHANNEL_EVENT_CLOSE, nil, func(payload interface{}) { channel.onClose(payload) })
+	channel.On(CHANNEL_EVENT_ERROR, nil, func(payload interface{}) { channel.onError(payload) })
+	channel.On(CHANNEL_EVENT_REPLY, nil, func(payload interface{}) { channel.onReply(payload) })
 
 	return channel
 }
@@ -131,21 +131,21 @@ func (c *Channel) trigger(event string, payload interface{}) {
 	}
 }
 
-func (c *Channel) On(event string, callback func(payload interface{})) {
+func (c *Channel) On(eventType string, filter map[string]interface{}, callback func(payload interface{})) {
 	binding := Binding{
-		Type:     event,
-		Filter:   nil,
+		Type:     eventType,
+		Filter:   filter,
 		Callback: callback,
 		ID:       uuid.New().String(),
 	}
-	c.bindings[event] = append(c.bindings[event], binding)
+	c.bindings[eventType] = append(c.bindings[eventType], binding)
 }
 
 func (c *Channel) off(event string, callbackID string) {
 	bindings := c.bindings[event]
 	for i, binding := range bindings {
 		if binding.ID == callbackID {
-			c.bindings[event] = append(bindings[:i], bindings[i+1:]...)
+			c.bindings[event] = append(c.bindings[event], bindings[i+1:]...)
 			break
 		}
 	}

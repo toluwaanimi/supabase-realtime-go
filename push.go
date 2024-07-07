@@ -90,7 +90,7 @@ func (p *Push) startTimeout() {
 		p.matchReceive(p.receivedResp)
 	}
 
-	p.channel.on(p.refEvent, callback)
+	p.channel.On(p.refEvent, callback)
 
 	p.timeoutTimer = time.AfterFunc(p.timeout, func() {
 		p.trigger("timeout", map[string]interface{}{})
