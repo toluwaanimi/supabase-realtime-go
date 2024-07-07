@@ -58,9 +58,9 @@ func NewChannel(topic string, params RealtimeChannelOptions, socket *Client) *Ch
 		channel.pushBuffer = []*Push{}
 	})
 
-	channel.on(CHANNEL_EVENT_CLOSE, channel.onClose)
-	channel.on(CHANNEL_EVENT_ERROR, channel.onError)
-	channel.on(CHANNEL_EVENT_REPLY, channel.onReply)
+	channel.On(CHANNEL_EVENT_CLOSE, channel.onClose)
+	channel.On(CHANNEL_EVENT_ERROR, channel.onError)
+	channel.On(CHANNEL_EVENT_REPLY, channel.onReply)
 
 	return channel
 }
@@ -131,7 +131,7 @@ func (c *Channel) trigger(event string, payload interface{}) {
 	}
 }
 
-func (c *Channel) on(event string, callback func(payload interface{})) {
+func (c *Channel) On(event string, callback func(payload interface{})) {
 	binding := Binding{
 		Type:     event,
 		Filter:   nil,
